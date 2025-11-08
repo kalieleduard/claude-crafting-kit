@@ -1,0 +1,55 @@
+{
+    "name": "claude-craftkit",
+    "owner": {
+      "name": "Kaliel Eduard",
+      "email": "kalieleduard1@gmail.com",
+      "url": "https://github.com/kalieleduard"
+    },
+    "metadata": {
+      "description": "Comprehensive plugin and skill marketplace for Claude Code - enhancing your development workflow with specialized skills, agents, commands, and utilities",
+      "version": "1.0.0"
+    },
+    "plugins": [
+      {
+        "name": "ui",
+        "source": "./plugins/ui",
+        "description": "shadcn/ui and tailwind css component generation and design utilities",
+        "version": "1.0.0",
+        "category": "ui",
+        "keywords": [
+          "shadcn",
+          "tailwind",
+          "ui",
+          "components",
+          "design",
+          "styling"
+        ],
+        "author": {
+          "name": "Kaliel Eduard",
+          "email": "kalieleduard1@gmail.com"
+        },
+        "license": "mit"
+      },
+      {
+        "name": "git",
+        "source": "./plugins/git",
+        "description": "git workflow automation with intelligent skills and quick commands for conventional commits and pr creation",
+        "version": "1.0.0",
+        "category": "workflow",
+        "keywords": [
+          "git",
+          "commit",
+          "conventional-commits",
+          "pull-request",
+          "workflow",
+          "automation",
+          "skills"
+        ],
+        "author": {
+          "name": "Kaliel Eduard",
+          "email": "kalieleduard1@gmail.com"
+        },
+        "license": "mit"
+      }
+    ]
+  }

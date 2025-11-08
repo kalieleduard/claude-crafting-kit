@@ -1,0 +1,21 @@
+{
+    "name": "git",
+    "version": "1.0.0",
+    "description": "Agent-based git workflow automation with Haiku for fast, efficient commit, push, and PR operations using conventional commit standards",
+    "author": {
+      "name": "Kaliel Eduard",
+      "email": "kalieleduard1@gmail.com"
+    },
+    "keywords": [
+      "git",
+      "commit",
+      "conventional-commits",
+      "pull-request",
+      "workflow",
+      "automation",
+      "agents",
+      "haiku",
+      "dispatcher"
+    ],
+    "license": "MIT"
+  }
