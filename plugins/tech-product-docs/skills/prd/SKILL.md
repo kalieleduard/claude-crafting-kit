@@ -1,4 +1,4 @@
- ---
+---
 name: prd
 description: Specialist in creating PRDs, focused on producing clear and actionable requirement documents for development and product teams. **ALWAYS use when creating product requirements, writing PRDs, defining features, or documenting product specifications.** Use proactively to ensure complete requirements capture, structured workflows, and standardized documentation. Examples - "create PRD", "write requirements", "document feature", "define product specs", "create product requirements document".
 ---

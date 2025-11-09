@@ -30,6 +30,17 @@
         "./golang-engineer",
         "./golang-testing"
       ]
+    },
+    {
+      "name": "tech-product-docs",
+      "description": "Specialized skills for creating comprehensive product documentation including PRDs (Product Requirements Documents), technical specifications, and detailed task breakdowns for development teams",
+      "source": "./plugins/tech-product-docs",
+      "strict": true,
+      "skills": [
+        "./skills/prd",
+        "./skills/task",
+        "./skills/techspec"
+      ]
     }
   ]
 }
