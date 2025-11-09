@@ -1,81 +1,35 @@
 {
-    "name": "claude-craftkit",
-    "owner": {
-      "name": "Kaliel Eduard",
-      "email": "kalieleduard1@gmail.com",
-      "url": "https://github.com/kalieleduard"
+  "name": "claude-craftkit",
+  "owner": {
+    "name": "Kaliel Eduard",
+    "email": "kalieleduard1@gmail.com"
+  },
+  "metadata": {
+    "description": "Comprehensive plugin and skill marketplace for Claude Code - enhancing your development workflow with specialized skills, agents, commands, and utilities",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "git",
+      "description": "git workflow automation with intelligent skills and quick commands for conventional commits and pr creation",
+      "source": "./plugins/git",
+      "strict": false,
+      "skills": [
+        "./plugins/git/skills/git-commit",
+        "./plugins/git/skills/git-pr-creation"
+      ]
     },
-    "metadata": {
-      "description": "Comprehensive plugin and skill marketplace for Claude Code - enhancing your development workflow with specialized skills, agents, commands, and utilities",
-      "version": "1.0.0"
-    },
-    "plugins": [
-      {
-        "name": "ui",
-        "source": "./plugins/ui",
-        "description": "shadcn/ui and tailwind css component generation and design utilities",
-        "version": "1.0.0",
-        "category": "ui",
-        "keywords": [
-          "shadcn",
-          "tailwind",
-          "ui",
-          "components",
-          "design",
-          "styling"
-        ],
-        "author": {
-          "name": "Kaliel Eduard",
-          "email": "kalieleduard1@gmail.com"
-        },
-        "license": "mit"
-      },
-      {
-        "name": "git",
-        "source": "./plugins/git",
-        "description": "git workflow automation with intelligent skills and quick commands for conventional commits and pr creation",
-        "version": "1.0.0",
-        "category": "workflow",
-        "keywords": [
-          "git",
-          "commit",
-          "conventional-commits",
-          "pull-request",
-          "workflow",
-          "automation",
-          "skills"
-        ],
-        "author": {
-          "name": "Kaliel Eduard",
-          "email": "kalieleduard1@gmail.com"
-        },
-        "license": "mit"
-      },
-      {
-        "name": "engineering",
-        "source": "./plugins/engineering",
-        "description": "Expert engineering skills for backend development, code quality, Go programming, and testing with Clean Architecture, SOLID principles, and comprehensive testing practices",
-        "version": "1.0.0",
-        "category": "development",
-        "keywords": [
-          "backend",
-          "golang",
-          "go",
-          "clean-architecture",
-          "solid",
-          "code-quality",
-          "testing",
-          "testify",
-          "clean-code",
-          "design-patterns",
-          "engineering",
-          "best-practices"
-        ],
-        "author": {
-          "name": "Kaliel Eduard",
-          "email": "kalieleduard1@gmail.com"
-        },
-        "license": "mit"
-      }
-    ]
-  }
+    {
+      "name": "engineering",
+      "description": "Expert engineering skills for backend development, code quality, Go programming, and testing with Clean Architecture, SOLID principles, and comprehensive testing practices",
+      "source": "./plugins/engineering",
+      "strict": false,
+      "skills": [
+        "./plugins/engineering/backend",
+        "./plugins/engineering/code-quality",
+        "./plugins/engineering/golang-engineer",
+        "./plugins/engineering/golang-testing"
+      ]
+    }
+  ]
+}
