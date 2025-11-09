@@ -1,0 +1,535 @@
+---
+name: golang-engineer
+description: Expert Go engineer specializing in idiomatic Go code, Clean Architecture, SOLID principles, and enterprise-grade patterns. **ALWAYS use when writing Go code, designing Go modules, implementing features, or refactoring Go codebases.** Use proactively to ensure proper error handling, concurrency patterns, interface design, and adherence to Go best practices. Examples - "write Go function", "create Go service", "implement Go feature", "refactor Go code", "design Go module", "handle Go errors", "use Go concurrency".
+---
+
+# Go Coding Standards and Patterns
+
+<critical_validations>
+- Error Handling: Use unified strategy with `fmt.Errorf` internally and `core.NewError` at domain boundaries; handle explicitly and return early.
+- Map Operations: ALWAYS use `core.CopyMap`, `core.CloneMap`, `core.Merge`, or `core.DeepCopy` from `engine/core/copy.go`; never manually iterate or use `maps.Copy` directly.
+- Logging: Always use `logger.FromContext(ctx)`; never inject logger as dependency or use standard log package.
+- Formatting: Never create structs, functions, or any multi-line constructs in a single line.
+- Function Formatting: Never add blank lines inside function bodies; keep function code continuous without internal line breaks.
+- Documentation: Don't add comments to explain code changes; explanations belong in text responses.
+</critical_validations>
+
+## Related Skills
+
+→ Use `code-quality` skill for comprehensive SOLID principles, Clean Code patterns (KISS, YAGNI, DRY, TDA), and design standards when designing Go modules and implementing features
+
+→ Use `golang-testing` skill for writing tests following testify framework, AAA patterns, and maintaining 95%+ code coverage
+
+## Quick Reference
+- Concurrency: Embed mutexes, coordinate with errgroup, exit via context or signal handlers, ensure goroutines are properly managed and cleaned up.
+- Factories & config: Depend on abstractions, enforce defaults when options are missing.
+- Interfaces: Design narrow contracts, compose capabilities, honor LSP expectations.
+- Constructors & SRP: Inject abstractions, centralize defaults, split validation from persistence.
+- Context & resources: Context-first APIs, guard limits, close resources with contextual logging.
+- Error handling: Use unified strategy with `fmt.Errorf` internally and `core.NewError` at boundaries; handle explicitly and return early.
+- Documentation: Add doc comments for methods, structs, interfaces (2-4 lines max); avoid change explanations in code.
+- Formatting & limits: Adhere to Go style guide, `.golangci.yml`; max 50 lines for business logic functions, 120 chars per line, cyclomatic complexity <10; no blank lines inside function bodies.
+- Map operations: ALWAYS use `core.CopyMap`, `core.CloneMap`, `core.Merge`, or `core.DeepCopy` from `engine/core/copy.go`; never manually iterate or use `maps.Copy` directly.
+- Libraries: Use established core libraries as specified in project rules.
+
+## Project Structure and Organization
+- Group code by feature/domain when appropriate.
+- Keep package names simple and descriptive.
+- Follow the established pattern of separating interfaces from implementations.
+
+## Code Style and Standards
+
+### Critical Formatting Rules
+- **NEVER CREATE** anything (struct, function, etc.) that could span 2 lines in a single line:
+
+### Bad Example
+```go
+type CreateResource struct{ store resources.ResourceStore }
+```
+
+### Good Example
+```go
+type CreateResource struct{
+    store resources.ResourceStore
+}
+```
+
+### Documentation Policy
+- **DON'T ADD** comments to explain code changes - explanations belong in text responses.
+- Only add code comments when user explicitly requests them or code is complex and requires context for future developers.
+
+### Mandatory Limits
+- Adhere to Go's official style guide and the project's `.golangci.yml` configuration.
+- Function length should not exceed 50 lines for business logic.
+- Line length should not exceed 120 characters.
+- Cyclomatic complexity should be kept below 10.
+
+### No Line Breaks Inside Functions
+- **NEVER** add blank lines inside function bodies - keep function code continuous without internal line breaks.
+- Functions should have a single blank line before the function declaration, but no blank lines within the function body.
+- This improves readability and maintains consistent code density.
+
+#### Bad Example
+```go
+func (s *Service) ProcessUser(ctx context.Context, userID string) error {
+    user, err := s.repo.FindByID(ctx, userID)
+
+    if err != nil {
+        return fmt.Errorf("failed to find user: %w", err)
+    }
+
+    if err := s.validateUser(user); err != nil {
+        return fmt.Errorf("validation failed: %w", err)
+    }
+
+    return s.repo.Save(ctx, user)
+}
+```
+
+#### Good Example
+```go
+func (s *Service) ProcessUser(ctx context.Context, userID string) error {
+    user, err := s.repo.FindByID(ctx, userID)
+    if err != nil {
+        return fmt.Errorf("failed to find user: %w", err)
+    }
+    if err := s.validateUser(user); err != nil {
+        return fmt.Errorf("validation failed: %w", err)
+    }
+    return s.repo.Save(ctx, user)
+}
+```
+
+---
+
+## Error Handling
+
+### Unified Error Handling Strategy
+1. **Internal Error Propagation (within domains):**
+   - Use `fmt.Errorf()` for all internal error propagation within a domain.
+   - Always wrap errors with context: `fmt.Errorf("failed to load user: %w", err)`.
+   - This keeps internal code simple and avoids unnecessary abstraction.
+
+2. **Domain Boundaries (public service methods):**
+   - Use `core.NewError()` ONLY when returning errors from public service methods.
+   - These are the methods exposed to other domains or external consumers.
+   - Provides structured error information for cross-domain communication.
+
+3. **Always Required:**
+   - Check and handle errors explicitly - never ignore errors.
+   - Return early on errors to avoid deep nesting.
+   - Avoid naked returns in longer functions (as enforced by nakedret linter).
+
+### Implementation Examples
+```go
+// ✅ INTERNAL: Use fmt.Errorf within domain
+func (s *userService) validateUser(ctx context.Context, user *User) error {
+    if user.Email == "" {
+        return fmt.Errorf("email is required")
+    }
+    if err := s.repo.CheckEmailExists(ctx, user.Email); err != nil {
+        return fmt.Errorf("failed to check email existence: %w", err)
+    }
+    return nil
+}
+
+// ✅ DOMAIN BOUNDARY: Use core.NewError for public methods
+func (s *userService) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {
+    user := &User{
+        Email: req.Email,
+        Name:  req.Name,
+    }
+    if err := s.validateUser(ctx, user); err != nil {
+        return nil, core.NewError(
+            err,
+            "USER_VALIDATION_FAILED",
+            map[string]any{
+                "email": req.Email,
+            },
+        )
+    }
+    // ... rest of implementation using fmt.Errorf internally
+}
+```
+
+### Transaction Pattern
+```go
+defer func() {
+    if err != nil { tx.Rollback(ctx) } else { tx.Commit(ctx) }
+}()
+```
+
+## Dependencies and Interfaces (ISP)
+
+- Prefer explicit dependency injection through constructor functions.
+- Use interfaces to define behavior and enable testing.
+- Define interfaces in separate files when used across packages.
+- Keep interfaces small and focused on specific behavior.
+- Use interface composition for complex behavior.
+- Honor contracts consistently (LSP).
+
+### Interface Segregation Principle
+```go
+type Reader interface {
+    Read(ctx context.Context, id core.ID) (*Data, error)
+}
+
+type Writer interface {
+    Write(ctx context.Context, data *Data) error
+}
+
+type Deleter interface {
+    Delete(ctx context.Context, id core.ID) error
+}
+
+type Repository interface {
+    Reader
+    Writer
+    Deleter
+}
+
+// ❌ Avoid monolithic contracts
+type DataManager interface {
+    Read(ctx context.Context, id core.ID) (*Data, error)
+    Write(ctx context.Context, data *Data) error
+    Delete(ctx context.Context, id core.ID) error
+    Backup(ctx context.Context) error
+    Restore(ctx context.Context) error
+    Migrate(ctx context.Context) error
+}
+```
+
+### Interface Definition Example
+```go
+type Storage interface {
+    SaveMCP(ctx context.Context, def *MCPDefinition) error
+    LoadMCP(ctx context.Context, name string) (*MCPDefinition, error)
+    Close() error
+}
+```
+
+### Interface Implementation Pattern
+```go
+// Define interface
+type Service interface {
+	DoSomething(ctx context.Context, param string) error
+}
+
+// Implement interface
+type serviceImpl struct {
+	dependency Dependency
+}
+
+// Constructor function
+func NewService(dependency Dependency) Service {
+	return &serviceImpl{
+		dependency: dependency,
+	}
+}
+```
+
+## Constructors & Responsibilities (SRP)
+
+- Inject abstractions, centralize defaults, split validation from persistence.
+
+### Dependency Injection Pattern
+```go
+type WorkflowService struct {
+    taskRepo TaskRepository
+    executor TaskExecutor
+}
+
+func NewWorkflowService(taskRepo TaskRepository, executor TaskExecutor) *WorkflowService {
+    return &WorkflowService{taskRepo: taskRepo, executor: executor}
+}
+
+// ❌ Avoid concrete dependencies
+type BrokenWorkflowService struct {
+    taskRepo *PostgreSQLTaskRepository
+    executor *DockerExecutor
+}
+```
+
+### Service Constructor with Validation
+```go
+type AgentService struct {
+    repo   AgentRepository
+    config *AgentConfig
+}
+
+func NewAgentService(repo AgentRepository, config *AgentConfig) *AgentService {
+    if config == nil {
+        config = DefaultAgentConfig()
+    }
+    return &AgentService{repo: repo, config: config}
+}
+```
+
+### Single Responsibility Separation
+```go
+type UserValidator struct{}
+
+type UserRepository struct{}
+
+func (v *UserValidator) ValidateEmail(email string) error {
+    return nil
+}
+
+func (r *UserRepository) SaveUser(ctx context.Context, user *User) error {
+    return nil
+}
+
+// ❌ Do not mix responsibilities
+type UserService struct{}
+
+func (s *UserService) ValidateAndSaveUser(ctx context.Context, email string) error {
+    return nil
+}
+```
+
+## Factories & Defaults (OCP) - MANDATORY for Service Creation
+
+### Factory Pattern
+```go
+type Storage interface {
+    Save(ctx context.Context, data []byte) error
+}
+
+func NewStorage(cfg *StorageConfig) (Storage, error) {
+    switch cfg.Type {
+    case "redis":
+        return NewRedisStorage(), nil
+    case "memory":
+        return NewMemoryStorage(), nil
+    default:
+        return nil, fmt.Errorf("unsupported storage type: %s", cfg.Type)
+    }
+}
+```
+
+### Configuration with Defaults
+```go
+type ServiceConfig struct {
+    Port       int           `yaml:"port"`
+    Timeout    time.Duration `yaml:"timeout"`
+    MaxRetries int           `yaml:"max_retries"`
+}
+
+func DefaultServiceConfig() *ServiceConfig {
+    return &ServiceConfig{
+        Port:       8080,
+        Timeout:    30 * time.Second,
+        MaxRetries: 3,
+    }
+}
+
+func NewServiceFromConfig(cfg *ServiceConfig) *Service {
+    if cfg == nil {
+        cfg = DefaultServiceConfig()
+    }
+    return &Service{config: cfg}
+}
+```
+
+## Concurrency & Shutdown
+
+### Thread Safe Structures
+```go
+type Status struct {
+    mu   sync.RWMutex
+    Name string
+}
+```
+
+### Concurrent Operations
+```go
+g, ctx := errgroup.WithContext(ctx)
+for _, item := range items {
+    item := item
+    g.Go(func() error { return process(ctx, item) })
+}
+return g.Wait()
+```
+
+### Graceful Shutdown
+```go
+quit := make(chan os.Signal, 1)
+signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+select {
+case <-ctx.Done():
+    return shutdown(ctx)
+case <-quit:
+    return shutdown(ctx)
+}
+```
+
+## Context & Resource Lifecycle
+
+- Use `context.Context` for request-scoped values, deadlines, and cancellations.
+- Pass context as the first parameter to functions that make external calls.
+- Use the noctx linter to enforce context propagation.
+
+### Context Propagation Pattern
+```go
+func (s *TaskService) ExecuteTask(ctx context.Context, task *core.Task) (*core.TaskResult, error) {
+    select {
+    case <-ctx.Done():
+        return nil, ctx.Err()
+    default:
+        return s.doExecuteTask(ctx, task)
+    }
+}
+```
+
+### Resource Cleanup Patterns
+```go
+func (s *Service) ProcessWithResources(ctx context.Context) error {
+    conn, err := s.acquireConnection()
+    if err != nil {
+        return fmt.Errorf("failed to acquire connection: %w", err)
+    }
+    defer func() {
+        if closeErr := conn.Close(); closeErr != nil {
+            log := logger.FromContext(ctx)
+            log.Error("failed to close connection", "error", closeErr)
+        }
+    }()
+    return s.processWithConnection(ctx, conn)
+}
+
+func (s *Service) ProcessWithTimeout(ctx context.Context, timeout time.Duration) error {
+    ctx, cancel := context.WithTimeout(ctx, timeout)
+    defer cancel()
+    done := make(chan error, 1)
+    go func() {
+        done <- s.heavyProcessing(ctx)
+    }()
+    select {
+    case err := <-done:
+        return err
+    case <-ctx.Done():
+        return fmt.Errorf("operation timed out: %w", ctx.Err())
+    }
+}
+
+func (s *Service) ProcessMultipleResources(ctx context.Context) error {
+    file, err := os.Open("data.txt")
+    if err != nil {
+        return fmt.Errorf("failed to open file: %w", err)
+    }
+    defer file.Close()
+    s.mutex.Lock()
+    defer s.mutex.Unlock()
+    return s.processFileWithLock(ctx, file)
+}
+```
+
+---
+
+## Map and Data Structure Copy Operations
+
+**MANDATORY:** Use utilities from `engine/core/copy.go` - never use `maps.Copy`, manual loops, or `deepcopy` library directly.
+
+| Operation | Method | Use Case |
+|-----------|--------|----------|
+| Shallow copy | `core.CopyMap[K, V](m)` | Any map type |
+| Shallow copy | `core.CloneMap(m)` | `map[string]any` only |
+| Merge maps | `core.Merge(dst, src, "kind")` | Combine with override + slice append |
+| Deep copy | `core.DeepCopy[T](v)` | Nested structures, Input/Output types |
+
+```go
+// ✅ CORRECT
+copied := core.CopyMap(original)
+cloned := core.CloneMap(metadata)
+merged, err := core.Merge(defaults, overrides, "config")
+deepCopied, err := core.DeepCopy(input)
+
+// ❌ WRONG - Don't use these
+maps.Copy(dst, src)
+for k, v := range m { dst[k] = v }
+deepcopy.Copy(v)
+```
+
+---
+
+# Core Libraries & Project Utilities
+
+## Required Libraries
+
+### Web Framework
+
+**MUST use:** `gin-gonic/gin` for HTTP APIs
+
+### Validation
+
+**MUST use:** `go-playground/validator/v10` for input validation
+
+### CLI
+
+**MUST use:** `spf13/cobra` for commands
+
+### Documentation
+
+**MUST use:** `swaggo/swag` for API documentation
+
+## Project Utilities
+
+### Structured Logging
+
+```go
+// **MANDATORY PATTERN:** Always use logger.FromContext(ctx)
+log := logger.FromContext(ctx)
+log.Info("task executed", "task_id", id, "duration", time.Since(start))
+log.Error("execution failed", "error", err, "task_id", id)
+
+// ❌ NEVER use logger as function parameter
+func ProcessTask(ctx context.Context, logger *logger.Logger) {} // BAD
+
+// ❌ NEVER use logger dependency injection
+type Service struct {
+    logger *logger.Logger // BAD - inject via context instead
+}
+
+// ❌ NEVER use standard log package
+import "log" // BAD - use pkg/logger instead
+
+// ✅ CORRECT: Always extract logger from context
+func ProcessTask(ctx context.Context, task *Task) error {
+    log := logger.FromContext(ctx)
+    log.Info("processing task", "task_id", task.ID)
+    return nil
+}
+
+// ✅ CORRECT: Functions must accept context, not logger
+func (s *Service) ExecuteTask(ctx context.Context, id string) error {
+    log := logger.FromContext(ctx)
+    log.Info("executing task", "task_id", id)
+    return s.doExecute(ctx, id)
+}
+
+// NEVER log sensitive data
+log.Info("user authenticated", "user_id", userID) // ✅ Good
+log.Info("user authenticated", "password", pass) // ❌ Never do this
+```
+
+### Core Types
+
+```go
+// Use project core types
+var taskID core.ID  // UUIDs
+var reference core.Ref  // Polymorphic references
+```
+
+### Template Engine
+
+```go
+// Use pkg/tplengine for dynamic configurations
+engine := tplengine.New()
+result, err := engine.Process(template, variables)
+```
+
+---
+
+## ⚠️ Critical Reminder
+
+**Always follow the `<critical_validations>` section at the top of this document. These rules are mandatory and must be enforced in all code.**

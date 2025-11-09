@@ -358,12 +358,197 @@ git/
 
 ---
 
+## When to Use SKILL vs Agents
+
+This plugin uses both **Skills** and **Agents** for different purposes. Understanding when to use each helps optimize your workflow.
+
+### Skills (`skills/` directory)
+
+**Use Skills when:**
+- You need comprehensive guidance and detailed context
+- You want to understand best practices and patterns
+- You're learning or need examples
+- You need flexible, context-aware assistance
+- You want to invoke capabilities directly in conversation
+
+**Characteristics:**
+- Comprehensive documentation with examples
+- Detailed best practices and patterns
+- Context-aware guidance
+- Can be invoked directly: `@git-commit` or `@git-pr-creation`
+- Provide extensive explanations and reasoning
+
+**Example Use Cases:**
+```bash
+# Direct skill invocation for detailed guidance
+@git-commit "I've made changes to authentication, help me commit"
+
+# When you need to understand commit message conventions
+@git-pr-creation "How should I structure my PR description?"
+```
+
+### Agents (`agents/` directory)
+
+**Use Agents when:**
+- You want fast, automated execution
+- You need a quick, focused task completed
+- You're using commands (`/git:commit`, `/git:commit-push-pr`, `/git:clean`)
+- You want economical, token-efficient operations
+- You trust the automation to handle the task
+
+**Characteristics:**
+- Fast execution on Haiku model
+- Focused, single-purpose workers
+- Minimal explanation (execution-focused)
+- Lower token costs
+- Optimized for speed and efficiency
+
+**Example Use Cases:**
+```bash
+# Quick automated commit
+/git:commit
+
+# Complete workflow automation
+/git:commit-push-pr
+
+# Automated cleanup
+/git:clean
+```
+
+### Decision Matrix
+
+| Scenario | Use | Why |
+|---------|-----|-----|
+| Quick commit after coding | Agent (`/git:commit`) | Fast, automated |
+| Learning commit conventions | Skill (`@git-commit`) | Detailed guidance |
+| Creating PR with full context | Agent (`/git:commit-push-pr`) | Automated workflow |
+| Understanding PR best practices | Skill (`@git-pr-creation`) | Comprehensive examples |
+| Routine cleanup | Agent (`/git:clean`) | Fast execution |
+| Troubleshooting git issues | Skill (direct invocation) | Detailed explanations |
+
+### Summary
+
+- **Commands → Agents**: Fast, automated execution
+- **Direct Skill Invocation**: Comprehensive guidance and learning
+- **Both have their place**: Use agents for speed, skills for depth
+
+---
+
+## Skill Relationships
+
+Skills in this plugin are designed to work together, with clear relationships and dependencies. Understanding these relationships helps you use them effectively.
+
+### Git Workflow Skills
+
+#### `git-commit` → `git-pr-creation`
+
+**Relationship**: Sequential workflow
+
+The `git-commit` skill explicitly references `git-pr-creation` as the next step:
+
+```markdown
+## Related Skills
+
+→ Use `git-pr-creation` skill when you're ready to create a pull request 
+  after committing your changes
+```
+
+**Usage Pattern:**
+1. Use `@git-commit` to create commits during development
+2. Use `@git-pr-creation` when ready to open a PR
+
+**Example:**
+```bash
+# Step 1: Commit your changes
+@git-commit "commit authentication changes"
+
+# Step 2: Create PR (skill suggests this)
+@git-pr-creation "create PR for auth feature"
+```
+
+#### `git-pr-creation` → `git-commit`
+
+**Relationship**: Prerequisite reference
+
+The `git-pr-creation` skill references `git-commit` as a prerequisite:
+
+```markdown
+## Related Skills
+
+→ Use `git-commit` skill for creating conventional commit messages 
+  before opening a pull request
+```
+
+**Usage Pattern:**
+- If you haven't committed yet, `git-pr-creation` will guide you to commit first
+- Ensures commits follow conventional commit standards before PR creation
+
+### Cross-Plugin Skill Relationships
+
+Skills can reference skills from other plugins for comprehensive workflows:
+
+#### Example: `git-commit` → `project-workflow`
+
+The `git-commit` skill references the `project-workflow` skill from the `architecture-design` plugin:
+
+```markdown
+**For pre-commit checklist, quality gates, and Bun-specific commands, 
+see `project-workflow` skill from architecture-design plugin**
+```
+
+**Usage Pattern:**
+- Use `@git-commit` for commit message generation
+- Use `@project-workflow` for pre-commit checks and quality gates
+- Skills complement each other in the workflow
+
+### Skill Relationship Types
+
+1. **Sequential** (`git-commit` → `git-pr-creation`)
+   - One skill naturally follows another
+   - Skills reference the next step in the workflow
+
+2. **Prerequisite** (`git-pr-creation` → `git-commit`)
+   - One skill requires another to be used first
+   - Skills guide you to complete prerequisites
+
+3. **Complementary** (`git-commit` ↔ `project-workflow`)
+   - Skills work together but aren't sequential
+   - Each handles a different aspect of the same workflow
+
+4. **Informational** (`backend-engineer` → `golang-engineer`)
+   - Skills provide context about related capabilities
+   - Helps you understand when to use related skills
+
+### Best Practices for Skill Relationships
+
+1. **Follow the Chain**: When a skill references another, consider using it
+2. **Read Related Skills**: Check the "Related Skills" section in each skill
+3. **Understand Dependencies**: Know which skills are prerequisites
+4. **Combine Skills**: Use multiple skills together for complete workflows
+
+### Skill Relationship Graph
+
+```
+git-commit
+    ↓ (sequential)
+git-pr-creation
+    ↑ (prerequisite reference)
+
+git-commit
+    ↔ (complementary)
+project-workflow (from architecture-design plugin)
+```
+
+---
+
 ## Tips
 
 - **Combine workflows**: Use `/git:commit` during development, `/git:commit-push-pr` when ready
 - **Trust the agents**: Haiku agents are optimized for git operations
 - **Regular cleanup**: Run `/git:clean` weekly
 - **Review before pushing**: Always verify commit messages and changes
+- **Use skills for learning**: Invoke skills directly when you need detailed guidance
+- **Use agents for speed**: Commands delegate to agents for fast execution
 
 ---
 

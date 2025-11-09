@@ -67,6 +67,10 @@ You MUST follow the Conventional Commits specification:
 
 **For pre-commit checklist, quality gates, and Bun-specific commands, see `project-workflow` skill from architecture-design plugin**
 
+## Related Skills
+
+→ Use `git-pr-creation` skill when you're ready to create a pull request after committing your changes
+
 ## Workflow
 
 1. **Analyze Changes:**
