@@ -28,7 +28,10 @@
         "./backend",
         "./code-quality",
         "./golang-engineer",
-        "./golang-testing"
+        "./golang-testing",
+        "./bun",
+        "./typescript",
+        "./code-standards"
       ]
     },
     {

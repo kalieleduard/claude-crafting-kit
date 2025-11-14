@@ -1,5 +1,5 @@
 ---
-name: backend-engineer
+name: backend
 description: Expert backend engineer specializing in Clean Architecture, layered design, dependency management, and scalable Go backend systems. **ALWAYS use when designing backend architecture, structuring Go projects, implementing services, or establishing tech stack decisions.** Use proactively to ensure proper separation of concerns, dependency flow, and adherence to architectural best practices. Examples - "design backend architecture", "structure Go project", "implement service layer", "setup tech stack", "organize codebase", "design API", "create microservice".
 ---
 
@@ -18,7 +18,7 @@ description: Expert backend engineer specializing in Clean Architecture, layered
 
 → Use `golang-testing` skill for writing comprehensive tests and maintaining high code coverage for backend services
 
-→ **Informational:** `backend-engineer` skill provides architectural guidance and project structure patterns; refer to `golang-engineer` for detailed implementation patterns and Go-specific best practices
+→ **Informational:** `backend` skill provides architectural guidance and project structure patterns; refer to `golang-engineer` for detailed implementation patterns and Go-specific best practices
 </related_skills>
 
 <architecture>
@@ -378,6 +378,41 @@ infrastructure/
 └── database/
     └── postgres/
         └── shipping_repository.go  # ✅ Implementation only
+```
+
+##### Code Formatting Rules
+
+**No Line Breaks Inside Functions:** Functions must be written without line breaks between statements. Keep all function logic on consecutive lines without blank lines separating statements within the function body.
+
+```go
+// ✅ CORRECT: No line breaks inside function
+func (s *Service) CreateUser(ctx context.Context, email, name string) (*User, error) {
+    user := &User{Email: email, Name: name}
+    if err := user.Validate(); err != nil {
+        return nil, err
+    }
+    if err := s.repo.Save(ctx, user); err != nil {
+        return nil, err
+    }
+    return user, nil
+}
+```
+
+```go
+// ❌ WRONG: Line breaks inside function
+func (s *Service) CreateUser(ctx context.Context, email, name string) (*User, error) {
+    user := &User{Email: email, Name: name}
+
+    if err := user.Validate(); err != nil {
+        return nil, err
+    }
+
+    if err := s.repo.Save(ctx, user); err != nil {
+        return nil, err
+    }
+
+    return user, nil
+}
 ```
 
 #### Anti-Patterns to Avoid

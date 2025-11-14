@@ -515,7 +515,7 @@ see `project-workflow` skill from architecture-design plugin**
    - Skills work together but aren't sequential
    - Each handles a different aspect of the same workflow
 
-4. **Informational** (`backend-engineer` → `golang-engineer`)
+4. **Informational** (`backend` → `golang-engineer`)
    - Skills provide context about related capabilities
    - Helps you understand when to use related skills
 

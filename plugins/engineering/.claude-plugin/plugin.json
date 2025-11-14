@@ -18,6 +18,8 @@
     "clean-code",
     "design-patterns",
     "engineering",
+    "bun",
+    "typescript",
     "best-practices"
   ],
   "license": "MIT"
