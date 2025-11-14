@@ -3,8 +3,6 @@ name: code-quality
 description: Expert in code design standards including SOLID principles, Clean Code patterns (KISS, YAGNI, DRY, TDA), and pragmatic software design. **ALWAYS use when designing ANY classes/modules, implementing features, fixing bugs, refactoring code, or writing functions.** Use proactively to ensure proper design, separation of concerns, simplicity, and maintainability. Examples - "create class", "design module", "implement feature", "refactor code", "fix bug", "is this too complex", "apply SOLID", "keep it simple", "avoid over-engineering".
 ---
 
-# Code Quality Standards and Principles
-
 <critical_validations>
 - SOLID Principles: Apply Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles to all class and module designs.
 - Clean Code Principles: Follow KISS (Keep It Simple), YAGNI (You Aren't Gonna Need It), DRY (Don't Repeat Yourself), and TDA (Tell, Don't Ask) in all implementations.
@@ -16,15 +14,14 @@ description: Expert in code design standards including SOLID principles, Clean C
 - Go Type Grouping: Group related interface and type declarations using `type()` blocks instead of declaring each type separately.
 </critical_validations>
 
-This document outlines essential code quality principles including SOLID, Clean Code practices, and common anti-patterns to avoid. **Always apply these principles when writing, reviewing, or refactoring code.**
-
-## Related Skills
+<related_skills>
 
 → Use `golang-engineer` skill for Go-specific implementation patterns, error handling, and idiomatic Go code when applying these principles to Go projects
 
 → Use `golang-testing` skill for writing tests that follow these code quality principles and ensuring proper test coverage
+</related_skills>
 
-## SOLID Principles
+<solid_principles>
 
 SOLID is an acronym for five object-oriented design principles that make software designs more understandable, flexible, and maintainable.
 
@@ -866,9 +863,9 @@ func (a *BankAccount) GetBalance() float64 {
 func withdraw(account *BankAccount, amount float64) error {
     return account.Withdraw(amount) // Telling
 }
-```
+</clean_code_principles>
 
-## Small Functions
+<small_functions>
 
 **Principle:** Functions should be small and do one thing. They should fit on a screen and be easy to understand at a glance.
 
@@ -1005,9 +1002,9 @@ func trackAnalytics(order *Order) {
         "total":   order.Total,
     })
 }
-```
+</small_functions>
 
-## Meaningful Names
+<meaningful_names>
 
 **Principle:** Use intention-revealing names. A name should tell you why it exists, what it does, and how it's used.
 
@@ -1163,9 +1160,9 @@ func parse(tokens []Token) SyntaxTree {
     }
     return syntaxTree
 }
-```
+</single_abstraction>
 
-## Early Returns
+<early_returns>
 
 **Principle:** Use guard clauses and early returns to reduce nesting and improve readability. Handle error cases first, then proceed with the happy path.
 
@@ -1221,8 +1218,9 @@ func processUser(user *User) (string, error) {
 2. **Improves readability** - Linear flow is easier to follow
 3. **Reduces errors** - Less chance of missing closing braces
 4. **Makes intent clear** - Error cases are handled upfront
+</early_returns>
 
-## Common Anti-Patterns
+<anti_patterns>
 
 ### 1. God Object / God Class
 
@@ -1457,9 +1455,9 @@ func calculateTotal(items []Item) float64 {
     }
     return total
 }
-```
+</anti_patterns>
 
-## Complete Example: Applying All Principles
+<complete_example>
 
 Here's a comprehensive example that demonstrates all the principles working together:
 
@@ -1714,10 +1712,9 @@ func main() {
     order := &Order{} // Initialize order
     _ = processor.Process(ctx, order)
 }
-```
+</complete_example>
 
-## Summary
-
+<summary>
 **Always apply these principles:**
 
 1. ✅ **SOLID** - Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
@@ -1729,6 +1726,7 @@ func main() {
 7. ✅ **Avoid Anti-Patterns** - God objects, magic numbers, long parameter lists, feature envy, dead code
 
 **Remember:** Code is read far more often than it's written. Write code for humans, not just for computers.
+</summary>
 
 ---
 

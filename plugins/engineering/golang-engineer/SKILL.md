@@ -3,8 +3,6 @@ name: golang-engineer
 description: Expert Go engineer specializing in idiomatic Go code, Clean Architecture, SOLID principles, and enterprise-grade patterns. **ALWAYS use when writing Go code, designing Go modules, implementing features, or refactoring Go codebases.** Use proactively to ensure proper error handling, concurrency patterns, interface design, and adherence to Go best practices. Examples - "write Go function", "create Go service", "implement Go feature", "refactor Go code", "design Go module", "handle Go errors", "use Go concurrency".
 ---
 
-# Go Coding Standards and Patterns
-
 <critical_validations>
 - Error Handling: Use unified strategy with `fmt.Errorf` internally and `core.NewError` at domain boundaries; handle explicitly and return early.
 - Map Operations: ALWAYS use `core.CopyMap`, `core.CloneMap`, `core.Merge`, or `core.DeepCopy` from `engine/core/copy.go`; never manually iterate or use `maps.Copy` directly.
@@ -14,13 +12,14 @@ description: Expert Go engineer specializing in idiomatic Go code, Clean Archite
 - Documentation: Don't add comments to explain code changes; explanations belong in text responses.
 </critical_validations>
 
-## Related Skills
+<related_skills>
 
 → Use `code-quality` skill for comprehensive SOLID principles, Clean Code patterns (KISS, YAGNI, DRY, TDA), and design standards when designing Go modules and implementing features
 
 → Use `golang-testing` skill for writing tests following testify framework, AAA patterns, and maintaining 95%+ code coverage
+</related_skills>
 
-## Quick Reference
+<quick_reference>
 - Concurrency: Embed mutexes, coordinate with errgroup, exit via context or signal handlers, ensure goroutines are properly managed and cleaned up.
 - Factories & config: Depend on abstractions, enforce defaults when options are missing.
 - Interfaces: Design narrow contracts, compose capabilities, honor LSP expectations.
@@ -31,13 +30,15 @@ description: Expert Go engineer specializing in idiomatic Go code, Clean Archite
 - Formatting & limits: Adhere to Go style guide, `.golangci.yml`; max 50 lines for business logic functions, 120 chars per line, cyclomatic complexity <10; no blank lines inside function bodies.
 - Map operations: ALWAYS use `core.CopyMap`, `core.CloneMap`, `core.Merge`, or `core.DeepCopy` from `engine/core/copy.go`; never manually iterate or use `maps.Copy` directly.
 - Libraries: Use established core libraries as specified in project rules.
+</quick_reference>
 
-## Project Structure and Organization
+<project_structure>
 - Group code by feature/domain when appropriate.
 - Keep package names simple and descriptive.
 - Follow the established pattern of separating interfaces from implementations.
+</project_structure>
 
-## Code Style and Standards
+<code_style>
 
 ### Critical Formatting Rules
 - **NEVER CREATE** anything (struct, function, etc.) that could span 2 lines in a single line:
@@ -98,11 +99,9 @@ func (s *Service) ProcessUser(ctx context.Context, userID string) error {
     }
     return s.repo.Save(ctx, user)
 }
-```
+</code_style>
 
----
-
-## Error Handling
+<error_handling>
 
 ### Unified Error Handling Strategy
 1. **Internal Error Propagation (within domains):**
@@ -157,9 +156,9 @@ func (s *userService) CreateUser(ctx context.Context, req CreateUserRequest) (*U
 defer func() {
     if err != nil { tx.Rollback(ctx) } else { tx.Commit(ctx) }
 }()
-```
+</error_handling>
 
-## Dependencies and Interfaces (ISP)
+<dependencies_interfaces>
 
 - Prefer explicit dependency injection through constructor functions.
 - Use interfaces to define behavior and enable testing.
@@ -222,13 +221,12 @@ type serviceImpl struct {
 
 // Constructor function
 func NewService(dependency Dependency) Service {
-	return &serviceImpl{
+    return &serviceImpl{
 		dependency: dependency,
 	}
-}
-```
+</dependencies_interfaces>
 
-## Constructors & Responsibilities (SRP)
+<constructors>
 
 - Inject abstractions, centralize defaults, split validation from persistence.
 
@@ -285,9 +283,9 @@ type UserService struct{}
 func (s *UserService) ValidateAndSaveUser(ctx context.Context, email string) error {
     return nil
 }
-```
+</constructors>
 
-## Factories & Defaults (OCP) - MANDATORY for Service Creation
+<factories>
 
 ### Factory Pattern
 ```go
@@ -329,9 +327,9 @@ func NewServiceFromConfig(cfg *ServiceConfig) *Service {
     }
     return &Service{config: cfg}
 }
-```
+</factories>
 
-## Concurrency & Shutdown
+<concurrency>
 
 ### Thread Safe Structures
 ```go
@@ -361,9 +359,9 @@ case <-ctx.Done():
 case <-quit:
     return shutdown(ctx)
 }
-```
+</concurrency>
 
-## Context & Resource Lifecycle
+<context_resources>
 
 - Use `context.Context` for request-scoped values, deadlines, and cancellations.
 - Pass context as the first parameter to functions that make external calls.
@@ -422,11 +420,9 @@ func (s *Service) ProcessMultipleResources(ctx context.Context) error {
     defer s.mutex.Unlock()
     return s.processFileWithLock(ctx, file)
 }
-```
+</context_resources>
 
----
-
-## Map and Data Structure Copy Operations
+<map_operations>
 
 **MANDATORY:** Use utilities from `engine/core/copy.go` - never use `maps.Copy`, manual loops, or `deepcopy` library directly.
 
@@ -449,10 +445,9 @@ maps.Copy(dst, src)
 for k, v := range m { dst[k] = v }
 deepcopy.Copy(v)
 ```
+</map_operations>
 
----
-
-# Core Libraries & Project Utilities
+<core_libraries>
 
 ## Required Libraries
 
@@ -527,9 +522,6 @@ var reference core.Ref  // Polymorphic references
 engine := tplengine.New()
 result, err := engine.Process(template, variables)
 ```
-
----
-
-## ⚠️ Critical Reminder
+</core_libraries>
 
 **Always follow the `<critical_validations>` section at the top of this document. These rules are mandatory and must be enforced in all code.**

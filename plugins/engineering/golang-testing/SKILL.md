@@ -3,13 +3,12 @@ name: golang-testing
 description: Expert in Go testing practices using testify framework, AAA patterns, and test utilities. **ALWAYS use when writing Go tests, creating test fixtures, or setting up test infrastructure.** Use proactively to ensure proper test structure, mock implementations, and test coverage. Examples - "write Go test", "create test fixture", "add test coverage", "mock Go interface", "setup test environment".
 ---
 
-# Go Testing Standards and Patterns
-
-## Related Skills
+<related_skills>
 
 → Use `golang-engineer` skill for Go coding standards, error handling patterns, and idiomatic Go code when writing test implementations
 
 → Use `code-quality` skill for applying SOLID principles and Clean Code patterns when structuring test code and test helpers
+</related_skills>
 
 <critical_validations>
 - Testing Framework: Use stretchr/testify for assertions and mocks, standardize all custom mocks
@@ -19,7 +18,7 @@ description: Expert in Go testing practices using testify framework, AAA pattern
 - Code Coverage: Project must maintain 95% or greater code coverage at all times
 </critical_validations>
 
-## Test File Location
+<test_file_location>
 
 **MANDATORY:** Each test file must be in the same folder/directory as the source file it tests.
 
@@ -64,8 +63,9 @@ project/
 - **Simplicity**: Easier to find and maintain tests alongside the code they test
 - **Go Conventions**: Follows standard Go project structure and tooling expectations
 - **IDE Support**: Better IDE support for running tests and code navigation
+</test_file_location>
 
-## Testing Framework
+<testing_framework>
 
 **MUST use:** `stretchr/testify` for assertions and mocks.
 
@@ -73,8 +73,9 @@ project/
 - **STANDARDIZE:** Replace all custom mocks with `testify/mock` implementations
 - Use `assert` package for all test assertions
 - Use `mock` package for creating mock implementations of interfaces
+</testing_framework>
 
-## Test Structure
+<test_structure>
 
 Tests must follow the Arrange-Act-Assert (AAA) pattern with blank lines separating each section. Do not use comments to mark sections.
 
@@ -121,10 +122,9 @@ func TestUserService_CreateUser(t *testing.T) {
     assert.NotNil(t, user)
     assert.Equal(t, "test@example.com", user.Email)
 }
-```
+</test_structure>
 
-## Test Helpers
-
+<test_helpers>
 Use project test utilities for consistent test setup and fixture management.
 
 ### Rules
@@ -146,10 +146,10 @@ func TestService(t *testing.T) {
         fixture := utils.SetupFixture("user_data.json")
         // test implementation
     })
-}
-```
+}```
+</test_helpers>
 
-## Code Coverage
+<code_coverage>
 
 **MANDATORY:** The project must maintain **95% or greater** code coverage at all times.
 

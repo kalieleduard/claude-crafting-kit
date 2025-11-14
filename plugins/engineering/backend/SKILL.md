@@ -3,8 +3,6 @@ name: backend-engineer
 description: Expert backend engineer specializing in Clean Architecture, layered design, dependency management, and scalable Go backend systems. **ALWAYS use when designing backend architecture, structuring Go projects, implementing services, or establishing tech stack decisions.** Use proactively to ensure proper separation of concerns, dependency flow, and adherence to architectural best practices. Examples - "design backend architecture", "structure Go project", "implement service layer", "setup tech stack", "organize codebase", "design API", "create microservice".
 ---
 
-# Backend Engineering Standards
-
 <critical_validations>
 - Architecture: Follow Clean Architecture principles with clear layer separation (domain, application, infrastructure, presentation); enforce dependency flow from outer layers to inner layers; never allow inner layers to depend on outer layers.
 - Type Declaration Flow: Declare interfaces in the file where they are consumed (service/consumer), not where they are implemented (repository/provider); interfaces belong to the consumer, not the provider.
@@ -12,7 +10,7 @@ description: Expert backend engineer specializing in Clean Architecture, layered
 - Tech Stack: Use established Go libraries and frameworks; gin-gonic/gin for HTTP APIs, go-playground/validator for validation, spf13/cobra for CLI, swaggo/swag for documentation; prefer standard library and proven patterns over custom solutions.
 </critical_validations>
 
-## Related Skills
+<related_skills>
 
 → Use `golang-engineer` skill for Go-specific implementation patterns, error handling, concurrency, and idiomatic Go code when implementing backend services
 
@@ -21,8 +19,9 @@ description: Expert backend engineer specializing in Clean Architecture, layered
 → Use `golang-testing` skill for writing comprehensive tests and maintaining high code coverage for backend services
 
 → **Informational:** `backend-engineer` skill provides architectural guidance and project structure patterns; refer to `golang-engineer` for detailed implementation patterns and Go-specific best practices
+</related_skills>
 
-## Architecture
+<architecture>
 
 ### Clean Architecture Principles
 
@@ -402,10 +401,9 @@ import "project/presentation" // Application should not depend on presentation
 package infrastructure
 
 import "project/presentation" // Infrastructure should not depend on presentation
-```
+</architecture>
 
-## Default Project Structure
-
+<project_structure>
 ### Standard Go Backend Structure
 
 Organize code by feature/domain with clear layer separation. Use consistent directory patterns that reflect Clean Architecture principles.
@@ -840,8 +838,7 @@ func TestUserService_CreateUser(t *testing.T) {
 3. **Minimal Dependencies:** Avoid unnecessary dependencies
 4. **Consistency:** Use the same libraries across the project
 5. **Performance:** Consider performance implications for high-throughput systems
-
----
+</tech_stack>
 
 ## ⚠️ Critical Reminder
 

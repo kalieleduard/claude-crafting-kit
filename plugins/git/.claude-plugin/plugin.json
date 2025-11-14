@@ -8,6 +8,7 @@
     },
     "keywords": [
       "git",
+      "checkout",
       "commit",
       "conventional-commits",
       "pull-request",
